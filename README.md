@@ -62,22 +62,22 @@ root@server:~# nsca -d -f -n 1 -t 1
 2020-12-18 13:04:29 DEBUG [23697] > [config] pid_file='/tmp/nsca.pid'
 2020-12-18 13:04:29 DEBUG [23697] > [config] server_address='0.0.0.0'
 2020-12-18 13:04:29 DEBUG [23697] > [config] server_port=5667
-2020-12-18 13:04:29 DEBUG [23697] > [config] nsca_user='macskas'
-2020-12-18 13:04:29 DEBUG [23697] > [config] nsca_group='macskas'
+2020-12-18 13:04:29 DEBUG [23697] > [config] nsca_user='nobody'
+2020-12-18 13:04:29 DEBUG [23697] > [config] nsca_group='nogroup'
 2020-12-18 13:04:29 DEBUG [23697] > [config] command_file='/tmp/testfifo'
 2020-12-18 13:04:29 DEBUG [23697] > [config] check_result_path='/tmp/nagiostest'
 2020-12-18 13:04:29 DEBUG [23697] > [config] max_packet_age=200
 2020-12-18 13:04:29 DEBUG [23697] > [config] max_packet_age_enabled=0
 2020-12-18 13:04:29 DEBUG [23697] > [config] decryption_method=3
-2020-12-18 13:04:29 DEBUG [23697] > [config] password='lofasz'
+2020-12-18 13:04:29 DEBUG [23697] > [config] password='passwordtest'
 2020-12-18 13:04:29 DEBUG [23697] > [config] nsca_workers='1'
 2020-12-18 13:04:29 DEBUG [23697] > [config] nsca_threads_per_worker='1'
 2020-12-18 13:04:29 DEBUG [23697] > [config] max_checks_per_connection='5000'
 2020-12-18 13:04:29 DEBUG [23697] > [config] decryption_mode/SHARED_CRYPT_INSTANCE=1
 2020-12-18 13:04:29 DEBUG [23697] > [void writepid()] pidfile=/tmp/nsca.pid, pid=23697
 2020-12-18 13:04:29 DEBUG [23697] > [processManager::loop] started
-2020-12-18 13:04:29 DEBUG [23697] > [super_downgrade] Changed groupname=macskas, gid=1000
-2020-12-18 13:04:29 DEBUG [23697] > [super_downgrade] Changed username=macskas, uid=1000
+2020-12-18 13:04:29 DEBUG [23697] > [super_downgrade] Changed groupname=nobody, gid=1000
+2020-12-18 13:04:29 DEBUG [23697] > [super_downgrade] Changed username=nogroup, uid=1000
 2020-12-18 13:04:29 DEBUG [23697] > [void processManager::work()] started
 2020-12-18 13:04:29 DEBUG [23697] > [fifo_client::fifo_client(std::__cxx11::string)]
 2020-12-18 13:04:29 DEBUG [23697] > [void network::run()]
