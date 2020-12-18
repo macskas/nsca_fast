@@ -21,6 +21,10 @@ nsca_threads_per_worker=8
 max_checks_per_connection=5000
 max_packet_age_enabled=0 # by default packet age check is disabled in the original nsca server even if you set max_packet_age. I keep it that way, but you can override nagios core behaviour by settings this value=1. I dont think its a good idea if the NTP sync is disabled on the clients.
 ```
+- As you can see it could use fix workers (fork) with the kernel's REUSEPORT support.
+- You can use fix size thread pools in workers. So you wont end up with infinite workers and infinite thread pools.
+- It supports fifo and check_result_path at the same time if you set both. First it writes the result into fifo and if it fails it saves it in the check_result_path
+
 
 ### dependency
   - mcrypt
