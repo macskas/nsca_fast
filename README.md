@@ -35,7 +35,7 @@ max_packet_age_enabled=0 # by default packet age check is disabled in the origin
   # apt-get install libevent-dev libmcrypt-dev cmake make g++
   # # chdir into directory
   # cmake .
-  # make .
+  # make -j5
   ```
   
 ### cli
