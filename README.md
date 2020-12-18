@@ -1,5 +1,5 @@
 # nsca_fast
-faster high traffic nsca server with worker and threadpool support for slow encryption methods. 
+Faster, high-performance NSCA server with worker and threadpool support. Drop-in replacement.
 
 
 ### problems with old NSCA server
