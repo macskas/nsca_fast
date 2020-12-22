@@ -19,7 +19,7 @@ jobs:
     - name: Install Dependecies
       run: |
         sudo apt-get -y -qq update
-        sudo apt-get- -y -qq --no-install-recommends install \
+        sudo apt-get -y -qq --no-install-recommends install \
         cmake \
         libmcrypt-dev \
         libevent-dev
