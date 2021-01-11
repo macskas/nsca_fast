@@ -11,7 +11,7 @@
 #include <string>
 
 #include "nsca_utils.h"
-
+#include "stat_writer.h"
 extern "C"
 {
 #include <event2/bufferevent.h>
@@ -44,7 +44,8 @@ public:
     uint32_t                connections = 0;
     uint64_t                counter = 0;
     uint64_t                counter_prev = 0;
-    class fifo_client       *fifoClient;
+    class fifo_client       *fifoClient = nullptr;
+    class stat_writer       StatWriter;
 
     std::string            command_file;
     std::string            check_result_path;
@@ -87,7 +88,7 @@ public:
 
     // not threadsafe, and we dont care. only stats
     void report_success_failed(uint16_t success, uint16_t failed);
-    void show_statistics();
+    void save_statistics();
 };
 
 

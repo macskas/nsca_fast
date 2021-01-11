@@ -61,6 +61,8 @@ private:
     int                         workers_running;
     class network*              nw;
     int                         lockfd;
+    int                         process_internal_id = 0;
+    time_t                      started = 0;
 
 public:
     volatile bool               shutdown_requested;
@@ -73,6 +75,10 @@ public:
     void setProcessMode(int);
     void setPids();
     void setMaxWorker(int);
+    void setInternalProcessId(int);
+    int getInternalProcessId();
+    void setStarted();
+    time_t getStarted();
 
     void startChild(child_t *, int);
     void runWorkers();

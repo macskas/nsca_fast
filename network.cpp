@@ -28,6 +28,7 @@ extern "C"
 
 #include "nsca_utils.h"
 #include "threadManager.h"
+#include "stat_writer.h"
 
 network::network() : ev_base(nullptr), listener(nullptr), shutdown_requested(false), now(0) {
     this->connections = 0;
@@ -122,7 +123,7 @@ void network::timer_proxy(evutil_socket_t fd, short event, void *user_data) {
     n->counter_rps[bucket_id] = diff;
 
     if (bucket_id == 0) {
-        n->show_statistics();
+        n->save_statistics();
     }
 
     if (n->shutdown_requested) {
@@ -231,6 +232,8 @@ void network::run()
     this->listener = nullptr;
     event_free(sigint_event);
     sigint_event = nullptr;
+    event_free(sigterm_event);
+    sigterm_event = nullptr;
     event_base_free(this->ev_base);
     this->ev_base = nullptr;
     debug_sprintf("[%s] finished.", __PRETTY_FUNCTION__);
@@ -256,11 +259,12 @@ void network::report_success_failed(uint16_t success, uint16_t failed) {
         this->message_failed += failed;
 }
 
-void network::show_statistics() {
+void network::save_statistics() {
     uint64_t sum = 0;
     for (int i=0; i<RPS_RESOLUTION; i++) {
         sum += this->counter_rps[i];
     }
     uint64_t rps = sum/RPS_RESOLUTION;
-    info_sprintf("[network statistics] %llu conn/s, connections=%d, report_success=%llu, report_failed=%llu", rps, this->counter, this->message_success, this->message_failed);
+
+    this->StatWriter.save_stats(this->now, rps, this->connections, this->counter, this->message_success, this->message_failed);
 }

@@ -41,6 +41,7 @@ processManager::processManager() {
     this->shutdown_requested = false;
     this->nw = nullptr;
     this->lockfd = -1;
+    this->setStarted();
 }
 
 processManager::~processManager() {
@@ -107,6 +108,8 @@ void processManager::startChild(child_t *chld, int wid) {
         this->reset();
         this->setProcessMode(PROCESS_CHILD);
         this->setPids();
+        this->setInternalProcessId(wid);
+        this->setStarted();
         signal(SIGUSR1, processManager::sighandler_proxy);
         signal(SIGINT, SIG_IGN);
         signal(SIGTERM, SIG_IGN);
@@ -385,4 +388,20 @@ void processManager::devnull_output() {
     assert(reopen_rc);
     reopen_rc = freopen("/dev/null", "w+", stderr);
     assert(reopen_rc);
+}
+
+void processManager::setInternalProcessId(int lProcessId) {
+    this->process_internal_id = lProcessId;
+}
+
+int processManager::getInternalProcessId() {
+    return this->process_internal_id;
+}
+
+void processManager::setStarted() {
+    this->started = time(nullptr);
+}
+
+time_t processManager::getStarted() {
+    return this->started;
 }

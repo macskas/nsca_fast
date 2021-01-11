@@ -163,6 +163,7 @@ void config::set_allowed_config_keys() {
     this->valid_keywords.insert("max_checks_per_connection");
     this->valid_keywords.insert("max_packet_age_enabled");
     this->valid_keywords.insert("decryption_mode");
+    this->valid_keywords.insert("dir_stats");
 }
 
 int config::check_config() {
@@ -184,6 +185,7 @@ int config::check_config() {
 
     std::string check_result_path = this->Get("check_result_path", "");
     std::string command_file = this->Get("command_file", "");
+    std::string dir_stats = this->Get("dir_stats", "/tmp");
 
     struct stat st{};
 
@@ -241,6 +243,13 @@ int config::check_config() {
         max_checks_per_connection = 1;
         this->Set("max_checks_per_connection", "1");
     }
+    if (!dir_stats.empty()) {
+        if (access(dir_stats.c_str(), W_OK) == 0) {
+
+        } else {
+            warning_sprintf("[config] dir_stats(%s) is not writeable", dir_stats.c_str());
+        }
+    }
 
     debug_sprintf("[config] debug=%d", debug);
     debug_sprintf("[config] pid_file='%s'", pid_file.c_str());
@@ -264,6 +273,7 @@ int config::check_config() {
     debug_sprintf("[config] nsca_threads_per_worker='%d'", nsca_threads_per_worker);
     debug_sprintf("[config] max_checks_per_connection='%d'", max_checks_per_connection);
     debug_sprintf("[config] decryption_mode/SHARED_CRYPT_INSTANCE=%d", (decryption_mode & DECRYPTION_MODE_SHARED_CRYPT_INSTANCE) ? 1 : 0);
+    debug_sprintf("[config] dir_stats='%s'", dir_stats.c_str());
 
     return 0;
 }
