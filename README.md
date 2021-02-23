@@ -1,7 +1,6 @@
 # nsca_fast
 Faster, high-performance NSCA server with worker and threadpool support. Drop-in replacement.
 
-
 ### problems with old NSCA server
   - If you have a high traffic NSCA server you will probably end up with a lot of child processes.
   - connection timeouts are not handled and child processes will stuck there forever
@@ -13,6 +12,13 @@ Faster, high-performance NSCA server with worker and threadpool support. Drop-in
   - this is just a drop-in replacement for nsca server. You can keep the old configuration if you want. Only a few new option is introduced.
   - I use mostly the orginal nsca/utils.h nsca/utils.c and it can be upgraded in no time if the core nagios will change anything in their code.
   
+### Performance change with real world example:
+ - HW: CPU E-2136 (cpubenchmark.net: 13K)
+ - nsca.cfg settings: encryption_method=3
+ - original nsca, anything without systemd: ~850 checks/seconds.  above that it started dropping checks but sometimes it scaled up to ~5k checks/seconds
+ - original nsca, ubuntu bionic+systemd (~850 checks/seconds) above that it started dropping checks(timeouts) and could not scale up at all. full restart was needed
+ - nsca_fast: 14k checks/seconds
+
 ### new options:
 ```
 decryption_mode=1 # default is 1, this is faster. 0 is more secure
