@@ -6,12 +6,15 @@
 #define NSCA_NETWORK_H
 
 #define RPS_RESOLUTION 5
-#include "fifo_client.h"
 
 #include <string>
 
 #include "nsca_utils.h"
 #include "stat_writer.h"
+#include "network_client.h"
+#include "fifo_client.h"
+#include "result_path_client.h"
+
 extern "C"
 {
 #include <event2/bufferevent.h>
@@ -45,6 +48,7 @@ public:
     uint64_t                counter = 0;
     uint64_t                counter_prev = 0;
     class fifo_client       *fifoClient = nullptr;
+    class result_path_client *resultPathClient = nullptr;
     class stat_writer       StatWriter;
 
     std::string            command_file;

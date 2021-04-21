@@ -40,10 +40,14 @@ char *rtrim(char *str, const char *seps)
         seps = "\t\n\v\f\r ";
     }
     i = strlen(str) - 1;
+
     while (i >= 0 && strchr(seps, str[i]) != nullptr) {
         str[i] = '\0';
+        if (i == 0)
+            break;
         i--;
     }
+
     return str;
 }
 
@@ -91,22 +95,22 @@ long config::GetInt(const std::string &Key, int Default)
 }
 
 void config::read_config() {
-    FILE *fp = nullptr;
-    char buf[DBUFFER_4K_SIZE];
-    int i = 0;
-    int llen = 0;
+    FILE        *fp = nullptr;
+    char        buf[DBUFFER_4K_SIZE];
+    int         i = 0;
+    int         llen = 0;
     std::string opt_key;
     std::string opt_val;
     char *helper = nullptr;
     DMEMZERO(buf, DBUFFER_4K_SIZE);
+
     fp = fopen(this->pathConfig.c_str(), "r");
     if (!fp) {
         error_sprintf("[%s] enable to open: %s for reading (%s)", __PRETTY_FUNCTION__, this->pathConfig.c_str(), strerror(errno));
         exit(1);
     }
 
-
-    while (fgets(buf, DBUFFER_4K_SIZE, fp)) {
+    while (fgets(buf, DBUFFER_4K_SIZE, fp) != nullptr) {
         opt_key.clear();
         opt_val.clear();
 
@@ -164,6 +168,8 @@ void config::set_allowed_config_keys() {
     this->valid_keywords.insert("max_packet_age_enabled");
     this->valid_keywords.insert("decryption_mode");
     this->valid_keywords.insert("dir_stats");
+
+    this->valid_keywords.insert("check_result_path_max_files");
 }
 
 int config::check_config() {
@@ -186,6 +192,8 @@ int config::check_config() {
     std::string check_result_path = this->Get("check_result_path", "");
     std::string command_file = this->Get("command_file", "");
     std::string dir_stats = this->Get("dir_stats", "/tmp");
+
+    int check_result_path_max_files = this->GetInt("check_result_path_max_files", 0);
 
     struct stat st{};
 
@@ -250,7 +258,11 @@ int config::check_config() {
             warning_sprintf("[config] dir_stats(%s) is not writeable", dir_stats.c_str());
         }
     }
-
+    if (check_result_path_max_files < 0) {
+        warning_sprintf("[config] check_result_path_max_files is negative (%d). New value is 0, so feature is disabled.", check_result_path_max_files);
+        check_result_path_max_files = 0;
+        this->Set("check_result_path_max_files", "0");
+    }
     debug_sprintf("[config] debug=%d", debug);
     debug_sprintf("[config] pid_file='%s'", pid_file.c_str());
 
@@ -274,6 +286,8 @@ int config::check_config() {
     debug_sprintf("[config] max_checks_per_connection='%d'", max_checks_per_connection);
     debug_sprintf("[config] decryption_mode/SHARED_CRYPT_INSTANCE=%d", (decryption_mode & DECRYPTION_MODE_SHARED_CRYPT_INSTANCE) ? 1 : 0);
     debug_sprintf("[config] dir_stats='%s'", dir_stats.c_str());
+
+    debug_sprintf("[config] check_result_path_max_files='%d'", check_result_path_max_files);
 
     return 0;
 }

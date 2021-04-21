@@ -6,9 +6,11 @@
 
 #include <utility>
 
+extern "C" {
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+}
 #include <cstdio>
 
 #include "common.h"

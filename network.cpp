@@ -29,11 +29,13 @@ extern "C"
 #include "nsca_utils.h"
 #include "threadManager.h"
 #include "stat_writer.h"
+#include "result_path_client.h"
 
 network::network() : ev_base(nullptr), listener(nullptr), shutdown_requested(false), now(0) {
     this->connections = 0;
     this->counter = 0;
     this->fifoClient = nullptr;
+    this->resultPathClient = nullptr;
     time(&(this->now));
     this->cnow.assign(ctime((&this->now)));
 
@@ -51,6 +53,9 @@ network::network() : ev_base(nullptr), listener(nullptr), shutdown_requested(fal
 
     if (!this->command_file.empty()) {
         this->fifoClient = new fifo_client(this->command_file);
+    }
+    if (!this->check_result_path.empty()) {
+        this->resultPathClient = new result_path_client(this);
     }
 
     for (int i=0; i<RPS_RESOLUTION; i++) {
@@ -80,7 +85,7 @@ network::network() : ev_base(nullptr), listener(nullptr), shutdown_requested(fal
             if (encrypt_init(this->password.c_str(), this->decryption_method, this->shared_transmission_iv, &(this->CI)) == OK) {
                 this->use_network_CI = true;
             } else {
-                throw std::runtime_error("Unable to generate crypt_instance in network::network().");
+                throw std::runtime_error("Unable to generate crypt_instance in parent::parent().");
             }
         }
     }
@@ -91,6 +96,11 @@ network::~network() {
     if (this->fifoClient != nullptr) {
         delete this->fifoClient;
         this->fifoClient = nullptr;
+    }
+
+    if (this->resultPathClient != nullptr) {
+        delete this->resultPathClient;
+        this->resultPathClient = nullptr;
     }
 
     if (this->CI) {
@@ -124,6 +134,10 @@ void network::timer_proxy(evutil_socket_t fd, short event, void *user_data) {
 
     if (bucket_id == 0) {
         n->save_statistics();
+    }
+
+    if (!n->shutdown_requested && n->resultPathClient) {
+        n->resultPathClient->check();
     }
 
     if (n->shutdown_requested) {
@@ -219,13 +233,16 @@ void network::run()
     struct event* sigint_event;
     sigint_event = evsignal_new(ev_base, SIGINT, network::sigint_proxy, this);
     assert(sigint_event);
-    event_add(sigint_event, NULL);
+    event_add(sigint_event, nullptr);
 
     struct event* sigterm_event;
     sigterm_event = evsignal_new(ev_base, SIGTERM, network::sigint_proxy, this);
     assert(sigterm_event);
-    event_add(sigterm_event, NULL);
+    event_add(sigterm_event, nullptr);
 
+    if (this->resultPathClient) {
+        this->resultPathClient->init();
+    }
 
     event_base_loop(this->ev_base, 0);
     evconnlistener_free(this->listener);
@@ -234,6 +251,10 @@ void network::run()
     sigint_event = nullptr;
     event_free(sigterm_event);
     sigterm_event = nullptr;
+
+    if (this->resultPathClient) {
+        this->resultPathClient->uninit();
+    }
     event_base_free(this->ev_base);
     this->ev_base = nullptr;
     debug_sprintf("[%s] finished.", __PRETTY_FUNCTION__);

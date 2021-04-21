@@ -9,7 +9,7 @@
 
 #include "nsca_common.h"
 #include "nsca_utils.h"
-#include "result_path_writer.h"
+#include "result_path_client.h"
 #include "threadManager.h"
 
 
@@ -441,8 +441,8 @@ void network_client::send_receive_message(data_packet *receive_packet)
             rc++;
         }
     }
-    if (!rc && !this->parent->check_result_path.empty()) {
-        if (write_result_path(this->parent->check_result_path, this->parent->now, this->parent->cnow,
+    if (!rc && this->parent->resultPathClient) {
+        if (this->parent->resultPathClient->write_result(this->parent->check_result_path, this->parent->now, this->parent->cnow,
                               receive_packet->host_name, receive_packet->svc_description, return_code,
                               receive_packet->plugin_output) == 0) {
             rc++;
