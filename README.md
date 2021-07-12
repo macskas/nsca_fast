@@ -26,6 +26,7 @@ nsca_workers=4
 nsca_threads_per_worker=8
 max_checks_per_connection=5000
 max_packet_age_enabled=0 # by default packet age check is disabled in the original nsca server even if you set max_packet_age. I keep it that way, but you can override nagios core behaviour by settings this value=1. I dont think its a good idea if the NTP sync is disabled on the clients.
+check_result_path_max_files=0 # if nagios core process is not running it wont process check_result_path files, so it might fill up the disk eventually. To avoid that you can specify a maximum number of unprocessed files. (it uses inotify instead of dir listing. I means its a low io operation even if you use physical disk and not tmpfs)
 ```
 - As you can see it could use fix workers (fork) with the kernel's REUSEPORT support.
 - You can use fix size thread pools in workers. So you wont end up with infinite workers and infinite thread pools.
