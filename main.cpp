@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
     class config            *cfg = config::getInstance();
     int                     rc = 0;
     cfg->setConfigPath("/etc/nagios/nsca.cfg");
-    int                     max_workers = 4;
+    int                     max_workers = 0;
     int                     nsca_threads_per_worker = -1;
     auto                   *pm = processManager::getInstance();
     // evthread_use_pthreads();
