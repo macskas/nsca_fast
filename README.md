@@ -1,6 +1,8 @@
 # nsca_fast
 Faster, high-performance NSCA server with worker and threadpool support. Drop-in replacement.
 
+![build](https://github.com/macskas/nsca_fast/actions/workflows/cmake.yml/badge.svg)
+
 ### problems with old NSCA server
   - If you have a high traffic NSCA server you will probably end up with a lot of child processes.
   - connection timeouts are not handled and child processes will stuck there forever
