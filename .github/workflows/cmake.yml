@@ -23,7 +23,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}
-          release_name: Release ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}
+          release_name: Binary release ${{ env.PACKAGE_NAME }} ${{ env.PACKAGE_VERSION }}
 
   build_release:
     name: Build release
