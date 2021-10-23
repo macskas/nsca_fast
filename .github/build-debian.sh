@@ -7,9 +7,9 @@ CHDATE=$(date +%a", "%d" "%b" "%Y" "%H:%M:%S" "%z)
 DEBIAN_CODENAME=$(lsb_release -c -s)
 DEBIAN_ID=$(lsb_release -i -s|tr '[:upper:]' '[:lower:]')
 DIR_DEBIAN=".github/.debian"
-RUNNER_NAME="${RUNNER_NAME:=$DEBIAN_ID-$DEBIAN_CODENAME}"
+MY_RUNNER_NAME="$DEBIAN_ID-$DEBIAN_CODENAME"
 ARCH="amd64"
-RELEASE_PREFIX="${PACKAGE_NAME}_${PACKAGE_VERSION}_${RUNNER_NAME}_$ARCH"
+RELEASE_PREFIX="${PACKAGE_NAME}_${PACKAGE_VERSION}_${MY_RUNNER_NAME}_$ARCH"
 
 do_changelog()
 {
