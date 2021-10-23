@@ -34,7 +34,7 @@ jobs:
         os: [ubuntu-latest]
         include:
           - os: ubuntu-latest
-            artifact_prefix: ${{ PACKAGE_NAME }}_${{ PACKAGE_VERSION }}_${{ RUNNER_NAME }}_${{ ARCH }}
+            artifact_prefix: ${{ env.PACKAGE_NAME }}_${{ env.PACKAGE_VERSION }}_ubuntu-latest_${{ env.ARCH }}
 
     steps:
     - uses: actions/checkout@v2
