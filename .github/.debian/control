@@ -1,0 +1,35 @@
+Source: nsca-fast
+Section: net
+Priority: optional
+Build-Depends: debhelper (>= 8.0.0)
+Maintainer: macskas
+Homepage: http://github.com/macskas/nsca_fast
+
+Package: nsca-fast
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Nagios service monitor agent, but its working
+ Same as the original nsca, but its faster and working even on
+ systems with systemd.
+ .
+ === Original NSCA description ===
+ This addon allows you to send service check results to a central
+ monitoring server running Nagios in a reasonably secure manner.
+ .
+ Nagios is a monitoring and management system for hosts, services and
+ networks.
+ .
+ Nagios' features include:
+ .
+  -  Monitoring of network services (via TCP port, SMTP, POP3, HTTP, NNTP,
+     PING, etc.)
+  -  Plugin interface to allow for user-developed service checks
+  -  Contact notifications when problems occur and get resolved (via email,
+     pager, or user-defined method)
+  -  Ability to define event handlers to be run during service or host events
+     (for proactive problem resolution)
+  -  Web output (current status, notifications, problem history, log file,
+     etc.)
+ .
+ Nagios was written in C and is designed to be easy to understand and modify
+ to fit your own needs.
