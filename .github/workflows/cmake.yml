@@ -22,8 +22,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ env.PACKAGE_NAME }}
+          release_name: Release ${{ env.PACKAGE_NAME }}
 
   build_release:
     name: Build release
@@ -31,12 +31,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-focal, ubuntu-bionic]
 
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependecies ubuntu-latest
-      if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get -y -qq update
         sudo apt-get -y -qq --no-install-recommends install \
@@ -65,19 +64,33 @@ jobs:
 
     - name: get name of the artifact
       run: |
-        ARTIFACT_PATHNAME=$(ls Release/*.deb)
-        ARTIFACT_NAME=$(basename $ARTIFACT_PATHNAME)
-        echo ARTIFACT_NAME=${ARTIFACT_NAME} >> $GITHUB_ENV
-        echo ARTIFACT_PATHNAME=${ARTIFACT_PATHNAME} >> $GITHUB_ENV
+        ARTIFACT_PATHNAME_DEB=$(ls Release/*.deb|head -n1)
+        ARTIFACT_NAME_DEB=$(basename $ARTIFACT_PATHNAME_DEB)
+        ARTIFACT_PATHNAME_TAR=$(ls Release/*.tar.gz|head -n1)
+        ARTIFACT_NAME_TAR=$(basename $ARTIFACT_PATHNAME_TAR)
+        echo ARTIFACT_NAME_DEB=${ARTIFACT_NAME_DEB} >> $GITHUB_ENV
+        echo ARTIFACT_PATHNAME_DEB=${ARTIFACT_PATHNAME_DEB} >> $GITHUB_ENV
+        echo ARTIFACT_NAME_TAR=${ARTIFACT_NAME_TAR} >> $GITHUB_ENV
+        echo ARTIFACT_PATHNAME_TAR=${ARTIFACT_PATHNAME_TAR} >> $GITHUB_ENV
 
-    - name: Upload
+    - name: Upload deb
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }}
-        asset_path: ${{ env.ARTIFACT_PATHNAME }}
-        asset_name: ${{ env.ARTIFACT_NAME }}
+        asset_path: ${{ env.ARTIFACT_PATHNAME_DEB }}
+        asset_name: ${{ env.ARTIFACT_NAME_DEB }}
         asset_content_type: application/vnd.debian.binary-package
+
+    - name: Upload tar.gz
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create_release.outputs.upload_url }}
+        asset_path: ${{ env.ARTIFACT_PATHNAME_TAR }}
+        asset_name: ${{ env.ARTIFACT_NAME_TAR }}
+        asset_content_type: application/gzip
 
 

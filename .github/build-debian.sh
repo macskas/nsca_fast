@@ -56,7 +56,7 @@ do_make_deb()
 
 do_release_binary()
 {
-    cp nsca Release/$RELEASE_PREFIX.bin
+    tar czvf Release/$RELEASE_PREFIX.tar.gz nsca nsca.cfg
 }
 
 do_cleanup()
