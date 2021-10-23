@@ -32,9 +32,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        include:
-          - os: ubuntu-latest
-            artifact_prefix: $PACKAGE_NAME_$PACKAGE_VERSION_ubuntu-latest_$ARCH
 
     steps:
     - uses: actions/checkout@v2
@@ -66,14 +63,21 @@ jobs:
         sudo apt-get -y -qq install fakeroot dh-make
         bash .github/build-debian.sh
 
+    - name: get name of the artifact
+      run: |
+        ARTIFACT_PATHNAME=$(ls Release/*.deb)
+        ARTIFACT_NAME=$(basename $ARTIFACT_PATHNAME)
+        echo ::set-env name=ARTIFACT_NAME::${ARTIFACT_NAME}
+        echo ::set-env name=ARTIFACT_PATHNAME::${ARTIFACT_PATHNAME}
+
     - name: Upload
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }}
-        asset_path: ./Release/${{ matrix.artifact_prefix }}.deb
-        asset_name: ${{ matrix.artifact_prefix }}.deb
+        asset_path: ${{ env.ARTIFACT_PATHNAME }}
+        asset_name: ${{ env.ARTIFACT_NAME }}
         asset_content_type: application/vnd.debian.binary-package
 
 
