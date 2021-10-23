@@ -22,8 +22,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.PACKAGE_NAME }}
-          release_name: Release ${{ env.PACKAGE_NAME }}
+          tag_name: ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}
+          release_name: Release ${{ env.PACKAGE_NAME }}-${{ env.PACKAGE_VERSION }}
 
   build_release:
     name: Build release
@@ -31,7 +31,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-focal, ubuntu-bionic]
+        os: [ubuntu-latest]
 
     steps:
     - uses: actions/checkout@v2
