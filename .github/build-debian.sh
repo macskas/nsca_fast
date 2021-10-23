@@ -1,13 +1,15 @@
 #!/bin/bash -e
 
-PACKAGE_NAME="nsca-fast"
-PACKAGE_VERSION="2.9.1-3"
-USERNAME="macskas"
+PACKAGE_NAME=${PACKAGE_NAME:=nsca-fast}
+PACKAGE_VERSION=${PACKAGE_VERSION:=2.9.1-3}
+USERNAME=${GITHUB_ACTOR:=macskas}
 CHDATE=$(date +%a", "%d" "%b" "%Y" "%H:%M:%S" "%z)
 DEBIAN_CODENAME=$(lsb_release -c -s)
 DEBIAN_ID=$(lsb_release -i -s|tr '[:upper:]' '[:lower:]')
-
 DIR_DEBIAN=".github/.debian"
+RUNNER_NAME="${RUNNER_NAME:=$DEBIAN_ID-$DEBIAN_CODENAME}"
+ARCH="amd64"
+RELEASE_PREFIX="${PACKAGE_NAME}_${PACKAGE_VERSION}_${RUNNER_NAME}_$ARCH"
 
 do_changelog()
 {
@@ -49,12 +51,12 @@ do_make_deb()
 
     rm -rf Release
     mkdir -p Release
-    dh_builddeb --destdir=Release --filename="${PACKAGE_NAME}_${PACKAGE_VERSION}_${DEBIAN_ID}-${DEBIAN_CODENAME}_amd64.deb"
+    dh_builddeb --destdir=Release --filename="$RELEASE_PREFIX.deb"
 }
 
 do_release_binary()
 {
-    cp nsca Release/${PACKAGE_NAME}_${PACKAGE_VERSION}_${DEBIAN_ID}-${DEBIAN_CODENAME}_amd64.bin
+    cp nsca Release/$RELEASE_PREFIX.bin
 }
 
 do_cleanup()
