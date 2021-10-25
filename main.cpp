@@ -76,7 +76,9 @@ void do_help(const std::string &programName)
     std::cout << "  -c [FILE]             configfile" << std::endl;
     std::cout << "  -d                    verbose output" << std::endl;
     std::cout << "  -f                    foreground" << std::endl;
+#if WORKERS_ENABLED
     std::cout << "  -n [MAX_WORKERS]      max workers - between 0 and 100" << std::endl;
+#endif
     std::cout << "  -t [THREADS]          max_threads_per_worker - between 0 and 1000" << std::endl;
     std::cout << std::endl;
     std::cout << "{ \"author\": \"" AUTHOR "\", \"version\": \"" VERSION_DATE_LONG"\", gcc: \"" << GCC_VERSION << "\" };" << std::endl;
@@ -109,6 +111,9 @@ int mainloop(char **argv, bool daemonize)
     atexit(signal_atexit);
 
     int workers = (int)cfg->GetInt("nsca_workers", 4);
+#if WORKERS_ENABLED
+    workers = 1;
+#endif
     pm->setProcessMode(PROCESS_MAIN);
     pm->setPids();
     if (pm->lock(argv[0])) {

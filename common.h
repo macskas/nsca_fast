@@ -47,4 +47,14 @@
 
 #define DECRYPTION_MODE_SHARED_CRYPT_INSTANCE 1
 
+#if defined(LEV_OPT_REUSEABLE_PORT) && defined(SO_REUSEPORT)
+    #define WORKERS_ENABLED 1
+#else
+    #define WORKERS_ENABLED 0
+#endif
+
+#ifndef LEV_OPT_REUSEABLE_PORT
+    #define LEV_OPT_REUSEABLE_PORT 0
+#endif
+
 #endif //NSCA_COMMON_H
