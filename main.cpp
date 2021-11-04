@@ -111,7 +111,7 @@ int mainloop(char **argv, bool daemonize)
     atexit(signal_atexit);
 
     int workers = (int)cfg->GetInt("nsca_workers", 4);
-#if WORKERS_ENABLED
+#if WORKERS_ENABLED == 0
     workers = 1;
 #endif
     pm->setProcessMode(PROCESS_MAIN);
