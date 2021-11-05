@@ -56,7 +56,7 @@ void threadManager::start() {
         for (int i=0; i<this->max_crypt_threads; i++) {
             lCI = nullptr;
             encrypt_init(password.c_str(), decryption_method, this->shared_transmitted_iv, &lCI);
-            lct = new crypt_thread_t;
+            lct = new crypt_thread_t(i);
             assert(lct);
             lct->set_CI(lCI);
             this->crypt_threads[i] = lct;

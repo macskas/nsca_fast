@@ -8,6 +8,7 @@
 #define RPS_RESOLUTION 5
 
 #include <string>
+#include <vector>
 
 #include "nsca_utils.h"
 #include "stat_writer.h"
@@ -47,7 +48,7 @@ public:
     uint32_t                connections = 0;
     uint64_t                counter = 0;
     uint64_t                counter_prev = 0;
-    class fifo_client       *fifoClient = nullptr;
+    class fifo_client       **fifoClients = nullptr;
     class result_path_client *resultPathClient = nullptr;
     class stat_writer       StatWriter;
 

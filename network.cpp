@@ -34,7 +34,7 @@ extern "C"
 network::network() : ev_base(nullptr), listener(nullptr), shutdown_requested(false), now(0) {
     this->connections = 0;
     this->counter = 0;
-    this->fifoClient = nullptr;
+    this->fifoClients = nullptr;
     this->resultPathClient = nullptr;
     time(&(this->now));
     this->cnow.assign(ctime((&this->now)));
@@ -52,7 +52,11 @@ network::network() : ev_base(nullptr), listener(nullptr), shutdown_requested(fal
     this->decryption_mode = (int)(cfg->GetInt("decryption_mode", 0));
 
     if (!this->command_file.empty()) {
-        this->fifoClient = new fifo_client(this->command_file);
+        auto iters = this->nsca_threads_per_worker > 0 ? this->nsca_threads_per_worker : 1;
+        this->fifoClients = new fifo_client*[this->nsca_threads_per_worker];
+        for (auto i=0; i<iters; i++) {
+            this->fifoClients[i] = new fifo_client(this->command_file);
+        }
     }
     if (!this->check_result_path.empty()) {
         this->resultPathClient = new result_path_client(this);
@@ -93,9 +97,13 @@ network::network() : ev_base(nullptr), listener(nullptr), shutdown_requested(fal
 }
 
 network::~network() {
-    if (this->fifoClient != nullptr) {
-        delete this->fifoClient;
-        this->fifoClient = nullptr;
+    if (this->fifoClients != nullptr) {
+        auto iters = this->nsca_threads_per_worker > 0 ? this->nsca_threads_per_worker : 1;
+        for (auto i=0; i<iters; i++) {
+            delete this->fifoClients[i];
+        }
+        delete [] this->fifoClients;
+        this->fifoClients = nullptr;
     }
 
     if (this->resultPathClient != nullptr) {
@@ -215,7 +223,11 @@ void network::run()
     this->listener = evconnlistener_new_bind(this->ev_base,
                                              reinterpret_cast<evconnlistener_cb>(network::listener_proxy),
                                              (void *)this,
-                                             LEV_OPT_REUSEABLE | LEV_OPT_CLOSE_ON_FREE | LEV_OPT_REUSEABLE_PORT,
+#ifdef WORKERS_ENABLED
+            LEV_OPT_REUSEABLE | LEV_OPT_CLOSE_ON_FREE | LEV_OPT_REUSEABLE_PORT,
+#else
+                                             LEV_OPT_REUSEABLE | LEV_OPT_CLOSE_ON_FREE,
+#endif
                                              -1,
                                              (struct sockaddr*)&ss,
                                              socklen);
@@ -224,8 +236,11 @@ void network::run()
     }
     assert(this->listener);
 
-    if (this->fifoClient) {
-        this->fifoClient->take_variables(this);
+    if (this->fifoClients) {
+        auto iters = this->nsca_threads_per_worker > 0 ? this->nsca_threads_per_worker : 1;
+        for (auto i=0; i<iters; i++) {
+            this->fifoClients[i]->take_variables(this);
+        }
     }
 
     this->start_timer();
@@ -255,6 +270,7 @@ void network::run()
     if (this->resultPathClient) {
         this->resultPathClient->uninit();
     }
+
     event_base_free(this->ev_base);
     this->ev_base = nullptr;
     debug_sprintf("[%s] finished.", __PRETTY_FUNCTION__);

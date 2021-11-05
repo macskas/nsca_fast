@@ -7,6 +7,11 @@
 
 #define AUTHOR "macskas"
 #include <cstring>
+extern "C" {
+    // needed for the WORKERS_ENABLED
+#include <sys/socket.h>
+#include <event2/listener.h>
+};
 
 #if (__GNUC__ && __GNUC_MINOR__ && __GNUC_PATCHLEVEL__)
 #define GCC_VERSION (__GNUC__ * 10000 \
@@ -49,8 +54,6 @@
 
 #if defined(LEV_OPT_REUSEABLE_PORT) && defined(SO_REUSEPORT)
     #define WORKERS_ENABLED 1
-#else
-    #define WORKERS_ENABLED 0
 #endif
 
 #ifndef LEV_OPT_REUSEABLE_PORT

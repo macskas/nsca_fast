@@ -233,11 +233,20 @@ int config::check_config() {
         }
     }
 
+#ifndef WORKERS_ENABLED
+    if (nsca_workers != 1) {
+        nsca_workers = 1;
+        warning_sprintf("[config] nsca_workers not supported by the kernel or the libevent library, new value=%d", nsca_workers);
+        this->Set("nsca_workers", "1");
+    }
+#endif
+
     if (nsca_workers <= 0 || nsca_workers > 2000) {
         warning_sprintf("[config] nsca_workers(%d) <= 0 || > 2000, new value=%d", nsca_workers, 4);
         nsca_workers = 4;
         this->Set("nsca_workers", "4");
     }
+
     if (nsca_threads_per_worker < 0) {
         warning_sprintf("[config] nsca_threads_per_worker < 0 (%d), new value=%d", nsca_threads_per_worker, 4);
         this->Set("nsca_threads_per_worker", "4");

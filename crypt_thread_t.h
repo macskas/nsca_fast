@@ -28,6 +28,7 @@ public:
 
 class crypt_thread_t {
 private:
+    int                         thread_id = 0;
     std::thread                 *myThread = nullptr;
     struct crypt_instance       *CI = nullptr;
     std::mutex                  mtx;
@@ -35,7 +36,7 @@ private:
     volatile bool               shutdown_requested;
     std::queue<crypt_queue_item_t> queue_items;
 public:
-    crypt_thread_t();
+    crypt_thread_t(int myThreadId);
     ~crypt_thread_t();
 
     void loop();

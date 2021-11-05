@@ -67,12 +67,12 @@ public:
     static void writecb_proxy(bufferevent *, void *);
     static void eventcb_proxy(struct bufferevent *, short , void *);
 
-    void process_queue();
-    void process_queue_mcrypt();
-    void process_queue_nomcrypt();
+    void process_queue(int thread_id);
+    void process_queue_mcrypt(int thread_id);
+    void process_queue_nomcrypt(int thread_id);
 
     void set_CI(struct crypt_instance *);
-    void send_receive_message(data_packet*);
+    void send_receive_message(data_packet*, int thread_id);
 };
 
 #endif //NSCA_NETWORK_CLIENT_H

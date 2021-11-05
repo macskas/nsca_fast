@@ -7,9 +7,10 @@
 #include "log.h"
 #include "crypt_thread_t.h"
 
-crypt_thread_t::crypt_thread_t() {
+crypt_thread_t::crypt_thread_t(int myTheadId) {
     this->shutdown_requested = false;
     this->myThread = new std::thread(crypt_thread_t::loop_proxy, this);
+    this->thread_id = myTheadId;
 }
 
 crypt_thread_t::~crypt_thread_t() {
@@ -56,7 +57,7 @@ void crypt_thread_t::loop() {
             if (queueItem.method == THREADMANAGER_METHOD_DECRYPT_PACKET) {
                 if (this->CI) {
                     queueItem.networkClient->set_CI(this->CI);
-                    queueItem.networkClient->process_queue();
+                    queueItem.networkClient->process_queue(this->thread_id);
                 }
             }
             mtx.lock();

@@ -92,6 +92,13 @@ int encrypt_init(const char *password,int encryption_method,char *received_iv,st
     CI->iv_size = 0;
     CI->blocksize=1;                        /* block size = 1 byte w/ CFB mode */
     CI->keysize=7;                          /* default to 56 bit key length */
+    CI->mcrypt_mode = nullptr;
+    CI->mcrypt_algorithm = nullptr;
+
+    /* XOR or no encryption */
+    if(encryption_method==ENCRYPT_NONE || encryption_method==ENCRYPT_XOR)
+        return OK;
+
     CI->mcrypt_mode = (char*)malloc(64);                  /* CFB = 8-bit cipher-feedback mode */
     CI->mcrypt_algorithm = (char*)malloc(128);
 
@@ -100,11 +107,6 @@ int encrypt_init(const char *password,int encryption_method,char *received_iv,st
 
     strcpy(CI->mcrypt_mode, "cfb");
     strcpy(CI->mcrypt_algorithm, "unknown");
-
-    /* XOR or no encryption */
-    if(encryption_method==ENCRYPT_NONE || encryption_method==ENCRYPT_XOR)
-        return OK;
-
 
     /* get the name of the mcrypt encryption algorithm to use */
     switch(encryption_method){

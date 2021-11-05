@@ -24,7 +24,14 @@ fifo_client::fifo_client(std::string command_file) {
     this->fp = nullptr;
     debug_sprintf("[%s]", __PRETTY_FUNCTION__);
 }
+
 fifo_client::~fifo_client() {
+    if (this->fp) {
+        fflush(this->fp);
+        fclose(this->fp);
+        this->fp = nullptr;
+        this->fd = -1;
+    }
     debug_sprintf("[%s]", __PRETTY_FUNCTION__);
 }
 

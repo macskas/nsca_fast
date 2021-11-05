@@ -210,7 +210,7 @@ void network_client::connection_closed() {
         if (this->parent->nsca_threads_per_worker > 0) {
             threadManager::getInstance()->add_job(THREADMANAGER_METHOD_DECRYPT_PACKET, this);
         } else {
-            this->process_queue();
+            this->process_queue(0);
         }
     } else {
         delete this;
@@ -282,11 +282,11 @@ void network_client::readcb(struct bufferevent *bev)
     this->data_packets.push_back(data_packet_pair);
 }
 
-void network_client::process_queue() {
+void network_client::process_queue(int thread_id) {
     if (this->parent->decryption_method > 1) {
-        this->process_queue_mcrypt();
+        this->process_queue_mcrypt(thread_id);
     } else {
-        this->process_queue_nomcrypt();
+        this->process_queue_nomcrypt(thread_id);
     }
 
     debug_sprintf("[%s] [success=%d failed=%d]", __PRETTY_FUNCTION__, d_success, d_failed );
@@ -294,7 +294,7 @@ void network_client::process_queue() {
     delete this;
 }
 
-void network_client::process_queue_mcrypt() {
+void network_client::process_queue_mcrypt(int thread_id) {
     this->debug_message(__PRETTY_FUNCTION__ );
 
     int                 i = 1;
@@ -355,7 +355,7 @@ void network_client::process_queue_mcrypt() {
             }
         }
 
-        this->send_receive_message(receive_packet);
+        this->send_receive_message(receive_packet, thread_id);
 
         i++;
         free(data_packet_pair);
@@ -364,7 +364,7 @@ void network_client::process_queue_mcrypt() {
     this->debug_message("process stop");
 }
 
-void network_client::process_queue_nomcrypt() {
+void network_client::process_queue_nomcrypt(int thread_id) {
     this->debug_message(__PRETTY_FUNCTION__ );
 
     int                 i = 1;
@@ -412,7 +412,7 @@ void network_client::process_queue_nomcrypt() {
             }
         }
 
-        this->send_receive_message(receive_packet);
+        this->send_receive_message(receive_packet, thread_id);
 
         i++;
         free(data_packet_pair);
@@ -429,14 +429,14 @@ void network_client::set_CI(struct crypt_instance *myCI) {
     //encrypt_init(this->parent->password.c_str(), this->parent->decryption_method, this->parent->shared_transmission_iv, &(this->CI));
 }
 
-void network_client::send_receive_message(data_packet *receive_packet)
+void network_client::send_receive_message(data_packet *receive_packet, int thread_id)
 {
     int rc = 0;
     int return_code = ntohs(receive_packet->return_code);
 
     rc = 0;
-    if (this->parent->fifoClient && !this->parent->command_file.empty()) {
-        if (this->parent->fifoClient->command(receive_packet->host_name, receive_packet->svc_description,
+    if (this->parent->fifoClients && !this->parent->command_file.empty()) {
+        if (this->parent->fifoClients[thread_id]->command(receive_packet->host_name, receive_packet->svc_description,
                                               return_code, receive_packet->plugin_output) == 0) {
             rc++;
         }
