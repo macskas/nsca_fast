@@ -102,3 +102,7 @@ root@server:~# nsca -d -f -n 1 -t 1
 2020-12-18 13:04:37 DEBUG [23697] > [processManager::loop] finished
 
 ```
+### munin screenshots after upgrade
+![Screenshot1](.github/screenshots/nagios-cpu-day.png "cpu-day")
+![Screenshot2](.github/screenshots/nagios-load-day.png "load-day")
+![Screenshot3](.github/screenshots/nagios-load-week.png "load-week")
