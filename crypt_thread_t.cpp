@@ -33,7 +33,7 @@ void crypt_thread_t::join() {
 void crypt_thread_t::add(int method, network_client *nc) {
         std::unique_lock<std::mutex> lck(mtx);
         this->queue_items.push(crypt_queue_item_t(method, nc));
-        mtx.unlock();
+        lck.unlock();
         this->cv.notify_one();
 }
 
@@ -53,14 +53,14 @@ void crypt_thread_t::loop() {
 
             crypt_queue_item_t queueItem = std::move(this->queue_items.front());
             this->queue_items.pop();
-            mtx.unlock();
+            lck.unlock();
             if (queueItem.method == THREADMANAGER_METHOD_DECRYPT_PACKET) {
                 if (this->CI) {
                     queueItem.networkClient->set_CI(this->CI);
                     queueItem.networkClient->process_queue(this->thread_id);
                 }
             }
-            mtx.lock();
+            lck.lock();
         } while (!this->shutdown_requested);
         debug_sprintf("[%s] finished.", __PRETTY_FUNCTION__ );
 }
