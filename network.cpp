@@ -8,6 +8,7 @@
 
 #include <csignal>
 #include <cassert>
+#include <stdexcept>
 
 // #include <chrono>
 
@@ -23,6 +24,7 @@ extern "C"
 #include <sys/types.h>
 #include <sys/un.h>
 }
+
 #include "config.h"
 #include "log.h"
 

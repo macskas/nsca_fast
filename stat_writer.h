@@ -1,11 +1,11 @@
 //
 // Created by macskas on 1/11/21.
 //
-
 #ifndef NSCA_STAT_WRITER_H
 #define NSCA_STAT_WRITER_H
 
 #include <string>
+#include <cstdint>
 
 class stat_writer {
 private:
