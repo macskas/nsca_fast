@@ -6,7 +6,7 @@ env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
   PACKAGE_NAME: nsca-fast
-  PACKAGE_VERSION: 2.9.1-4
+  PACKAGE_VERSION: 2.10.2-3
   ARCH: amd64
 
 jobs:

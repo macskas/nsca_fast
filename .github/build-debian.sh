@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 PACKAGE_NAME=${PACKAGE_NAME:=nsca-fast}
-PACKAGE_VERSION=${PACKAGE_VERSION:=2.9.1-3}
+PACKAGE_VERSION=${PACKAGE_VERSION:=2.10.2-3}
 USERNAME=${GITHUB_ACTOR:=macskas}
 CHDATE=$(date +%a", "%d" "%b" "%Y" "%H:%M:%S" "%z)
 DEBIAN_CODENAME=$(lsb_release -c -s)
