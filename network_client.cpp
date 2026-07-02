@@ -257,7 +257,7 @@ void network_client::readcb(struct bufferevent *bev)
         return;
     }
 
-    if (this->data_packets.size() > this->parent->max_checks_per_connection) {
+    if (this->data_packets.size() > (size_t)this->parent->max_checks_per_connection) {
         warning_sprintf("[%s] data_packets.size() > max_checks_per_connection (%d)", __PRETTY_FUNCTION__, this->parent->max_checks_per_connection);
         bufferevent_disable(bev, EV_READ);
         bufferevent_free(bev);
@@ -343,7 +343,7 @@ void network_client::process_queue_mcrypt(int thread_id) {
 
         if (this->parent->max_packet_age_enabled && max_packet_age > 0) {
             received_timestamp = htonl(receive_packet->timestamp);
-            if (received_timestamp > this->parent->now) {
+            if (received_timestamp > (uint64_t)this->parent->now) {
                 packet_diff = (int) (received_timestamp - this->parent->now);
             } else {
                 packet_diff = (int) (this->parent->now - received_timestamp);
@@ -371,7 +371,7 @@ void network_client::process_queue_nomcrypt(int thread_id) {
     int                 i = 1;
     u_int32_t           packet_crc32 = 0;
     u_int32_t           calculated_crc32 = 0;
-    unsigned long       max_packet_age = this->parent->max_packet_age;
+    int                 max_packet_age = this->parent->max_packet_age;
     int                 packet_diff = 0;
     uint64_t            received_timestamp = 0;
     data_packet_pair_t  *data_packet_pair = nullptr;
@@ -400,7 +400,7 @@ void network_client::process_queue_nomcrypt(int thread_id) {
 
         if (this->parent->max_packet_age_enabled && max_packet_age > 0) {
             received_timestamp = htonl(receive_packet->timestamp);
-            if (received_timestamp > this->parent->now) {
+            if (received_timestamp > (uint64_t)this->parent->now) {
                 packet_diff = (int) (received_timestamp - this->parent->now);
             } else {
                 packet_diff = (int) (this->parent->now - received_timestamp);
