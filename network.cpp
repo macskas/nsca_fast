@@ -55,7 +55,7 @@ network::network() : ev_base(nullptr), listener(nullptr), shutdown_requested(fal
 
     if (!this->command_file.empty()) {
         auto iters = this->nsca_threads_per_worker > 0 ? this->nsca_threads_per_worker : 1;
-        this->fifoClients = new fifo_client*[this->nsca_threads_per_worker];
+        this->fifoClients = new fifo_client*[iters];
         for (auto i=0; i<iters; i++) {
             this->fifoClients[i] = new fifo_client(this->command_file);
         }

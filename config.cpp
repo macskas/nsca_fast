@@ -39,6 +39,8 @@ char *rtrim(char *str, const char *seps)
     if (seps == nullptr) {
         seps = "\t\n\v\f\r ";
     }
+    if (str[0] == '\0')
+        return str;
     i = strlen(str) - 1;
 
     while (i >= 0 && strchr(seps, str[i]) != nullptr) {

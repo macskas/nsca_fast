@@ -114,6 +114,7 @@ int fifo_client::command(const std::string& hostname, const std::string& service
                             (uint64_t) (this->parent->now), hostname.c_str(), return_code,
                             plugin_output.c_str());
         }
+        if (wlen >= maxlen) wlen = maxlen - 1;
         int wsize = write(this->fd, tmpbuf, wlen);
         if (wsize == -1) {
             if (errno == EPIPE) {

@@ -9,8 +9,8 @@
 
 crypt_thread_t::crypt_thread_t(int myTheadId) {
     this->shutdown_requested = false;
-    this->myThread = new std::thread(crypt_thread_t::loop_proxy, this);
     this->thread_id = myTheadId;
+    this->myThread = new std::thread(crypt_thread_t::loop_proxy, this);
 }
 
 crypt_thread_t::~crypt_thread_t() {

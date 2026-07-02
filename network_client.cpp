@@ -62,7 +62,7 @@ void network_client::take_variables(network *cm, evutil_socket_t myfd, struct so
     memcpy(&(this->ss), sa, sl);
     this->client_id = this->parent->counter++;
     this->parent->connections++;
-    this->clientPort = ((struct sockaddr_in *)&this->ss)->sin_port;
+    this->clientPort = ntohs(((struct sockaddr_in *)&this->ss)->sin_port);
     char* ipbuf = nullptr;
     switch(*(&((struct sockaddr *)&this->ss)->sa_family)) {
         case AF_INET:
@@ -91,7 +91,8 @@ void network_client::take_variables(network *cm, evutil_socket_t myfd, struct so
         this->transmission_iv = (char*)malloc(TRANSMITTED_IV_SIZE);
         generate_transmitted_iv(this->transmission_iv);
     }
-    this->init_events();
+    if (this->init_events() != 0)
+        return;
 
     this->debug_message("Client connected");
 }
@@ -433,6 +434,10 @@ void network_client::send_receive_message(data_packet *receive_packet, int threa
 {
     int rc = 0;
     int return_code = ntohs(receive_packet->return_code);
+    receive_packet->host_name[MAX_HOSTNAME_LENGTH-1] = '\0';
+    receive_packet->svc_description[MAX_DESCRIPTION_LENGTH-1] = '\0';
+    receive_packet->plugin_output[MAX_PLUGINOUTPUT_LENGTH-1] = '\0';
+
 
     rc = 0;
     if (this->parent->fifoClients && !this->parent->command_file.empty()) {
